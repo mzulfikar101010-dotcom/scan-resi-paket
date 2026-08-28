@@ -1,4 +1,4 @@
-const CACHE_NAME = 'scan-resi-cache-v1';
+const CACHE_NAME = 'scan-resi-cache-v2';
 const APP_SHELL = [
   './',
   './index.html',
@@ -26,8 +26,10 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Cache-first for the app shell (works offline for scanning).
-// Network-first for everything else (e.g. the SheetJS CDN script needed for export).
+// Network-first for same-origin app files: always try to fetch the latest
+// version first, and only fall back to the cached copy when offline.
+// This makes future updates (like this one) show up immediately instead
+// of being stuck on a stale cached version.
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   const url = new URL(req.url);
@@ -35,14 +37,11 @@ self.addEventListener('fetch', (event) => {
 
   if (isSameOrigin) {
     event.respondWith(
-      caches.match(req).then((cached) => {
-        if (cached) return cached;
-        return fetch(req).then((res) => {
-          const resClone = res.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(req, resClone));
-          return res;
-        }).catch(() => cached);
-      })
+      fetch(req).then((res) => {
+        const resClone = res.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(req, resClone));
+        return res;
+      }).catch(() => caches.match(req))
     );
   } else {
     event.respondWith(
