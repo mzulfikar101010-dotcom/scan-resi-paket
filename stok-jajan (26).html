@@ -1,0 +1,1958 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>Stok Jajan</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1F5D50">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+  :root{
+    --bg:#FAF3E4;
+    --card:#FFFFFF;
+    --ink:#2C2620;
+    --muted:#8A7F6D;
+    --teal:#1F5D50;
+    --teal-light:#2C7A6B;
+    --marigold:#E8A33D;
+    --marigold-dark:#C97F1E;
+    --danger:#C1442E;
+    --danger-bg:#FBE7E2;
+    --success:#3F8C4C;
+    --success-bg:#E7F3E7;
+    --warn:#D98B1F;
+    --warn-bg:#FBF0DC;
+    --border:#E7DCC4;
+    --radius:14px;
+    --shadow:0 2px 10px rgba(44,38,32,0.08);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;overscroll-behavior-y:contain;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .display{font-family:'Fredoka',sans-serif;}
+  #app{
+    max-width:760px;
+    margin:0 auto;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    padding-bottom:76px;
+    overscroll-behavior-y:contain;
+  }
+  header.topbar{
+    background:var(--teal);
+    color:#fff;
+    padding:18px 18px 22px;
+    border-radius:0 0 22px 22px;
+    box-shadow:var(--shadow);
+    position:relative;
+  }
+  header.topbar .row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  header.topbar h1{
+    font-family:'Fredoka',sans-serif;
+    font-size:22px;
+    margin:0;
+    font-weight:700;
+    letter-spacing:0.2px;
+  }
+  header.topbar .sub{
+    font-size:12.5px;
+    opacity:0.85;
+    margin-top:4px;
+  }
+  .refresh-btn{
+    background:rgba(255,255,255,0.14);
+    border:none;
+    color:#fff;
+    border-radius:10px;
+    padding:8px 10px;
+    font-size:13px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .refresh-btn:active{transform:scale(0.96);}
+  .stats-strip{
+    display:flex;
+    gap:10px;
+    margin-top:14px;
+    overflow-x:auto;
+  }
+  .stat-pill{
+    background:rgba(255,255,255,0.12);
+    border-radius:10px;
+    padding:8px 12px;
+    min-width:88px;
+    flex-shrink:0;
+  }
+  .stat-pill .num{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:17px;}
+  .stat-pill .lbl{font-size:10.5px;opacity:0.8;margin-top:2px;}
+
+  main{flex:1;padding:16px 14px 8px;}
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:14px;
+    margin-bottom:12px;
+    box-shadow:var(--shadow);
+  }
+  .card h3{margin:0 0 4px;font-family:'Fredoka',sans-serif;font-size:16px;}
+  .muted{color:var(--muted);}
+  .small{font-size:12.5px;}
+
+  .tag{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:6px 14px 6px 20px;
+    background:var(--marigold);
+    color:#fff;
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    font-size:13.5px;
+    clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%);
+    border-radius:3px;
+    line-height:1.3;
+  }
+  .tag::before{
+    content:'';
+    position:absolute;
+    left:6px; top:50%; transform:translateY(-50%);
+    width:5px;height:5px;border-radius:50%;
+    background:rgba(255,255,255,0.95);
+  }
+  .tag.teal{background:var(--teal);}
+  .tag.muted-tag{background:var(--muted);}
+
+  button{font-family:'Inter',sans-serif;}
+  .btn{
+    border:none;
+    border-radius:10px;
+    padding:10px 14px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+  .btn:active{transform:scale(0.97);}
+  .btn-primary{background:var(--marigold);color:#fff;}
+  .btn-primary:hover{background:var(--marigold-dark);}
+  .btn-teal{background:var(--teal);color:#fff;}
+  .btn-outline{background:transparent;color:var(--teal);border:1.5px solid var(--teal);}
+  .btn-danger{background:var(--danger-bg);color:var(--danger);}
+  .btn-ghost{background:#F1EAD8;color:var(--ink);}
+  .btn-sm{padding:6px 10px;font-size:12.5px;border-radius:8px;}
+  .btn-block{width:100%;justify-content:center;}
+  .btn:disabled{opacity:0.5;cursor:not-allowed;}
+
+  input[type=text],input[type=number],input[type=search],select,textarea{
+    width:100%;
+    border:1.5px solid var(--border);
+    background:#FFFDF8;
+    border-radius:9px;
+    padding:9px 10px;
+    font-size:14px;
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+  }
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--marigold-dark);outline-offset:1px;}
+  label{font-size:12.5px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px;}
+  .field{margin-bottom:10px;}
+  .field-row{display:flex;gap:8px;align-items:flex-end;}
+  .field-row > *{flex:1;}
+
+  .section-title{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:10px;
+  }
+  .section-title h2{font-family:'Fredoka',sans-serif;font-size:19px;margin:0;}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th{text-align:left;color:var(--muted);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:0.3px;padding:6px 8px;border-bottom:1.5px solid var(--border);}
+  td{padding:8px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+
+  .badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;}
+  .badge-ok{background:var(--success-bg);color:var(--success);}
+  .badge-warn{background:var(--warn-bg);color:var(--warn);}
+  .badge-danger{background:var(--danger-bg);color:var(--danger);}
+  .badge-in{background:var(--success-bg);color:var(--success);}
+  .badge-out{background:var(--danger-bg);color:var(--danger);}
+  .badge-return{background:#E1EEF5;color:#2A6E8C;}
+  .badge-sale{background:var(--warn-bg);color:var(--warn);}
+  .badge-adjust{background:#EDE7F5;color:#6B4FA0;}
+
+  .item-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
+  .item-row select{flex:2;}
+  .item-row input{flex:1;}
+  .icon-btn{
+    background:var(--danger-bg);color:var(--danger);border:none;border-radius:8px;
+    width:32px;height:32px;flex-shrink:0;cursor:pointer;font-size:15px;
+  }
+
+  .empty-state{
+    text-align:center;
+    padding:32px 16px;
+    color:var(--muted);
+  }
+  .empty-state .emoji{font-size:36px;display:block;margin-bottom:8px;}
+
+  nav.bottomnav{
+    position:fixed;
+    bottom:0;left:0;right:0;
+    background:#fff;
+    border-top:1.5px solid var(--border);
+    display:flex;
+    max-width:760px;
+    margin:0 auto;
+    box-shadow:0 -4px 14px rgba(44,38,32,0.08);
+    z-index:50;
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  nav.bottomnav button{
+    flex:1;
+    background:none;
+    border:none;
+    padding:9px 2px 8px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:2px;
+    cursor:pointer;
+    color:var(--muted);
+    font-size:10.5px;
+    font-weight:600;
+  }
+  nav.bottomnav button .ic{font-size:19px;}
+  nav.bottomnav button.active{color:var(--teal);}
+  nav.bottomnav button.active .ic{transform:translateY(-1px);}
+
+  .toast-wrap{
+    position:fixed;
+    top:12px;left:0;right:0;
+    display:flex;
+    justify-content:center;
+    z-index:200;
+    pointer-events:none;
+  }
+  .toast{
+    background:var(--ink);
+    color:#fff;
+    padding:10px 16px;
+    border-radius:10px;
+    font-size:13.5px;
+    box-shadow:0 4px 16px rgba(0,0,0,0.25);
+    max-width:90%;
+    text-align:center;
+  }
+  .toast.error{background:var(--danger);}
+  .toast.success{background:var(--success);}
+
+  .filter-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+  .chip{
+    padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;
+    background:#F1EAD8;color:var(--muted);border:none;cursor:pointer;
+  }
+  .chip.active{background:var(--teal);color:#fff;}
+
+  .divider{height:1px;background:var(--border);margin:12px 0;}
+
+  .stock-num{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14.5px;}
+
+  .loading-screen{
+    position:fixed;inset:0;background:var(--bg);z-index:999;
+    display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;
+  }
+  .spinner{
+    width:34px;height:34px;border-radius:50%;
+    border:4px solid var(--border);border-top-color:var(--marigold);
+    animation:spin 0.8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .max-card{
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .max-num{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:26px;}
+  .max-num.zero{color:var(--danger);}
+  .max-num.low{color:var(--warn);}
+  .max-num.ok{color:var(--success);}
+
+  ::placeholder{color:#BFB49C;}
+  input.invalid-combo{border-color:var(--danger)!important;background:var(--danger-bg);}
+  .combo-wrap{position:relative;}
+  .combo-dropdown{
+    position:absolute;top:calc(100% + 4px);left:0;right:0;
+    background:#fff;border:1.5px solid var(--border);border-radius:10px;
+    max-height:190px;overflow-y:auto;z-index:80;
+    box-shadow:0 6px 18px rgba(44,38,32,0.18);display:none;
+  }
+  .combo-dropdown.show{display:block;}
+  .combo-item{padding:9px 12px;font-size:14px;cursor:pointer;border-bottom:1px solid var(--border);}
+  .combo-item:last-child{border-bottom:none;}
+  .combo-item:hover,.combo-item.active{background:#F1EAD8;}
+  .combo-item .stock-hint{float:right;color:var(--muted);font-size:12px;font-family:'JetBrains Mono',monospace;}
+
+  @media (max-width:380px){
+    .stat-pill{min-width:76px;padding:7px 9px;}
+  }
+
+  /* ===== HARGA, MODAL & UNTUNG ===== */
+  .calc{position:sticky;bottom:calc(72px + env(safe-area-inset-bottom));z-index:20;
+    background:var(--teal);color:#fff;border-radius:14px;padding:12px 14px;margin:6px 0 10px;
+    box-shadow:0 6px 18px rgba(31,93,80,0.35);}
+  .calc-top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;}
+  .calc-lbl{font-size:11px;opacity:.75;font-weight:600;text-transform:uppercase;letter-spacing:.3px;}
+  .calc-val{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:16px;}
+  .calc-val.big{font-size:22px;}
+  .calc .gain{color:#B8F0BF;} .calc .loss{color:#FFB3A3;} .calc .neutral{opacity:.6;}
+  .calc-warn{margin-top:8px;font-size:12px;background:rgba(255,255,255,.14);padding:6px 8px;border-radius:8px;}
+  .calc-detail{background:#FFFDF8;border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:6px;}
+  .calc-table{width:100%;font-size:14px;}
+  .calc-table td{padding:5px 0;border-bottom:1px dashed var(--border);}
+  .calc-table td:last-child{text-align:right;font-family:'JetBrains Mono',monospace;}
+  .calc-table td.neg{color:var(--danger);}
+  .calc-table tr.total td{font-weight:700;font-size:16px;border-bottom:none;padding-top:9px;}
+  .calc-table .gain{color:var(--success);} .calc-table .loss{color:var(--danger);}
+  .price-input{font-size:20px!important;font-family:'JetBrains Mono',monospace;font-weight:700;}
+  .money-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;
+    background:#FFFDF8;border:1px solid var(--border);border-radius:10px;padding:8px 10px;}
+  .money-val{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;margin-top:2px;word-break:break-word;}
+  .money-grid .calc-lbl{color:var(--muted);opacity:1;}
+  .money-val.gain{color:var(--success);} .money-val.loss{color:var(--danger);}
+  .warn-text{color:var(--warn);font-weight:600;}
+  details.quick-add summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--teal);padding:6px 0;}
+
+  /* ===== DAFTAR KARTU (Stok & Resi) ===== */
+  .list-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:12px;}
+  .list-row{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);}
+  .list-row:last-child{border-bottom:none;}
+  .list-row.editing{display:block;background:#FFFDF8;}
+  .row-main{flex:1;min-width:0;}
+  .row-name{font-weight:600;font-size:14.5px;word-break:break-word;}
+  .row-sub{font-size:12.5px;margin-top:3px;color:var(--ink);}
+  .est-line{font-family:'Inter',sans-serif;font-weight:600;font-size:11px;color:#A8A196;opacity:.9;white-space:nowrap;margin-top:2px;}
+  .est-line.neg{color:#C98A84;}
+  .row-stock{font-size:18px;min-width:38px;text-align:right;}
+  .row-actions{display:flex;gap:4px;}
+
+  /* ===== OPTIMASI HP ===== */
+  input[type=search]{width:100%;border:1.5px solid var(--border);background:#FFFDF8;border-radius:9px;padding:9px 10px;color:var(--ink);font-family:'Inter',sans-serif;-webkit-appearance:none;appearance:none;}
+  *{-webkit-tap-highlight-color:transparent;}
+  button,select,input,summary{touch-action:manipulation;}
+  .qty-input{flex:0 0 72px!important;max-width:72px;}
+  input[type=text],input[type=number],input[type=search],select,textarea{font-size:16px;min-height:46px;}
+  .btn{min-height:44px;}
+  .btn-sm{min-height:40px;padding:8px 12px;}
+  .icon-btn{width:44px;height:44px;}
+  .chip{min-height:38px;padding:7px 14px;}
+  header.topbar{padding-top:calc(14px + env(safe-area-inset-top));}
+  .toast-wrap{top:calc(10px + env(safe-area-inset-top));}
+  nav.bottomnav{padding-bottom:env(safe-area-inset-bottom);}
+  nav.bottomnav button{min-height:58px;font-size:11px;}
+  nav.bottomnav button .ic{font-size:21px;}
+  main{padding:14px 12px 8px;}
+  @media (max-width:480px){
+    header.topbar{padding-bottom:14px;border-radius:0 0 18px 18px;}
+    header.topbar h1{font-size:19px;}
+    header.topbar .sub{display:none;}
+    .stats-strip{margin-top:10px;gap:8px;}
+    .stat-pill{min-width:72px;padding:6px 10px;}
+    .stat-pill .num{font-size:15px;}
+    .section-title h2{font-size:17px;}
+    .field-row{flex-wrap:wrap;}
+  }
+  .check-row{display:flex;align-items:center;gap:12px;padding:12px 14px;margin:0 0 10px;background:#FFFDF8;
+    border:1.5px solid var(--border);border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;color:var(--ink);}
+  .check-row input{width:24px;height:24px;min-height:0;flex:0 0 24px;accent-color:var(--teal);margin:0;}
+  .check-row .muted{font-weight:400;font-size:12.5px;}
+  .item-card{margin-bottom:12px;}
+  .item-card .item-row{margin-bottom:4px;}
+  .item-info{display:flex;justify-content:space-between;align-items:center;gap:8px;
+    margin:0 2px 0 4px;padding:6px 10px;background:#F6EFDD;border-radius:8px;font-size:12.5px;color:var(--ink);}
+  .item-sub{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--teal);}
+  .combo-item{display:block;}
+  .combo-item .stock-hint{display:block;float:none;margin-top:2px;font-size:12px;}
+  /* satu baris = satu biji: kotak harga menggantikan kotak qty */
+  .price-pill{flex:0 0 92px;min-height:46px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:#F6EFDD;border-radius:9px;padding:2px 4px;text-align:center;line-height:1.15;}
+  .pp-val{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;color:var(--teal);}
+  .pp-sub{font-size:10px;color:var(--muted);}
+  .pp-warn{font-size:11.5px;font-weight:700;color:var(--warn);}
+  .pp-empty{color:var(--muted);}
+  .item-row .combo-wrap input{font-size:15px;}
+</style>
+</head>
+<body>
+
+<div id="loading" class="loading-screen">
+  <div class="spinner"></div>
+  <div class="small muted">Memuat data dari cloud…</div>
+</div>
+
+<div id="toastWrap" class="toast-wrap"></div>
+
+<div id="app" style="display:none;">
+  <header class="topbar">
+    <div class="row">
+      <div>
+        <h1>🍡 Stok Jajan</h1>
+        <div class="sub" id="headerSub">Manajemen stok &amp; paket harian</div>
+      </div>
+      <button class="refresh-btn" id="refreshBtn" title="Sinkron ulang dari cloud">🔄 <span id="refreshLabel">Sync</span></button>
+    </div>
+    <div class="stats-strip" id="statsStrip"></div>
+  </header>
+
+  <main id="content"></main>
+
+  <nav class="bottomnav" id="bottomnav"></nav>
+</div>
+
+<script>
+/* =========================================================
+   DATA LAYER
+========================================================= */
+// >>> GANTI URL DI BAWAH INI dengan URL Web App hasil deploy Google Apps Script kamu <<<
+const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwovANKJUp4Zx118rgFUH6Zgy34vBlMBeyyV370YoHE_62SsnvnzcGV5g1YA5yQxBDz/exec';
+
+let state = { products: [], packages: [], movements: [], resi: [], settings: {} };
+let uiBusy = false;
+let formOpen = false;
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+function sheetUrlConfigured(){
+  return SHEET_API_URL && SHEET_API_URL.indexOf('PASTE_URL') === -1;
+}
+
+async function loadState(silent){
+  if(!sheetUrlConfigured()){
+    showToast('URL Google Sheets belum diatur. Edit SHEET_API_URL di kode HTML.', 'error');
+    if(!silent) hideLoading();
+    return;
+  }
+  try{
+    await saveChain; // tunggu penyimpanan yang sedang jalan, supaya tidak menimpa data baru dengan data lama
+    const seqBefore = saveSeq;
+    const res = await fetch(SHEET_API_URL, { method:'GET' });
+    const text = await res.text();
+    const data = parseJsonOrExplain(text);
+    if(saveSeq !== seqBefore || savePending > 0) return; // ada perubahan baru saat memuat: data dari server sudah usang, abaikan
+    state = {
+      products: data.products || [],
+      packages: data.packages || [],
+      movements: data.movements || [],
+      resi: data.resi || [],
+      settings: data.settings || {}
+    };
+  }catch(e){
+    showToast('Gagal memuat data dari Google Sheets: ' + (e.message||''), 'error');
+  }
+  if(!silent) hideLoading();
+}
+
+// Kadang Apps Script membalas halaman HTML (error izin akses / quota), bukan JSON.
+// Ini mendeteksi itu dan kasih pesan yang jelas, bukan error teknis mentah.
+function parseJsonOrExplain(text){
+  try{ return JSON.parse(text); }
+  catch(e){
+    throw new Error('Server Google Sheets membalas bukan data (kemungkinan izin akses Apps Script belum "Anyone", belum di-deploy ulang, atau sedang dibatasi Google karena terlalu sering diakses). Coba tekan Sync lagi sebentar lagi.');
+  }
+}
+
+// Penyimpanan diantrekan satu per satu (tidak boleh dua simpan bersamaan)
+let saveChain = Promise.resolve();
+let saveSeq = 0, savePending = 0;
+function saveState(){
+  saveSeq++; savePending++;
+  const p = saveChain.then(doSaveState, doSaveState).finally(()=>{ savePending--; });
+  saveChain = p.catch(()=>{});
+  return p;
+}
+async function doSaveState(){
+  if(!sheetUrlConfigured()){
+    showToast('URL Google Sheets belum diatur. Edit SHEET_API_URL di kode HTML.', 'error');
+    return false;
+  }
+  try{
+    if(state.movements.length > 1000) state.movements = state.movements.slice(0,1000);
+    if(state.resi && state.resi.length > 2000) state.resi = state.resi.slice(0,2000);
+    const res = await fetch(SHEET_API_URL, {
+      method:'POST',
+      headers: {'Content-Type':'text/plain;charset=utf-8'}, // hindari CORS preflight
+      body: JSON.stringify(state)
+    });
+    const text = await res.text();
+    const json = parseJsonOrExplain(text);
+    if(!json || !json.ok){ showToast('Gagal menyimpan ke Google Sheets.', 'error'); return false; }
+    return true;
+  }catch(e){
+    showToast('Gagal menyimpan ke Google Sheets: ' + (e.message||''), 'error');
+    return false;
+  }
+}
+
+function hideLoading(){
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+}
+
+/* =========================================================
+   HELPERS
+========================================================= */
+function sortedProducts(){
+  return [...state.products].sort((a,b)=>a.name.localeCompare(b.name,'id',{sensitivity:'base'}));
+}
+function getProduct(id){ return state.products.find(p=>p.id===id); }
+function getPackage(id){ return state.packages.find(p=>p.id===id); }
+
+// Stok yang "dipesan" oleh resi yang sudah diupload tapi belum di-scan packing.
+// Dihitung langsung dari tab Resi (status "Belum Packing"), jadi otomatis hilang saat di-scan
+// (saat itu stok real yang berkurang) dan otomatis menyesuaikan kalau status diubah manual.
+function reservedMap(){
+  const map = {};
+  for(const r of (state.resi||[])){
+    if(r.status !== 'Belum Packing' || r.matchType !== 'paket') continue;
+    const pkg = getPackage(r.matchId) || getPackage(r.name);
+    if(!pkg) continue;
+    for(const it of pkg.items){
+      map[it.productId] = (map[it.productId]||0) + (it.qty||1) * (Number(r.qty)||1);
+    }
+  }
+  return map;
+}
+function estStockOf(p, rm){ return p.stock - ((rm||reservedMap())[p.id]||0); }
+
+function maxSellable(pkg, useEst){
+  if(!pkg.items || !pkg.items.length) return {max:0, bottleneck:null};
+  const rm = useEst ? reservedMap() : null;
+  let max = Infinity, bottleneck = null;
+  for(const it of pkg.items){
+    const p = getProduct(it.productId);
+    const stock = p ? (useEst ? estStockOf(p, rm) : p.stock) : 0;
+    const qty = it.qty || 1;
+    const possible = Math.max(0, Math.floor(stock / qty));
+    if(possible < max){ max = possible; bottleneck = p ? p.name : '(produk dihapus)'; }
+  }
+  if(max === Infinity) max = 0;
+  return {max, bottleneck};
+}
+
+function fmtDate(ts){
+  const d = new Date(ts);
+  return d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}) + ' ' +
+         d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+}
+
+function addMovement(type, note, changes, meta){
+  // changes: [{productId, name, delta}]
+  state.movements.unshift({
+    id: uid(),
+    ts: Date.now(),
+    type, note, changes, meta: meta||null
+  });
+}
+
+function applyChangesToStock(changes){
+  for(const c of changes){
+    const p = getProduct(c.productId);
+    if(p) p.stock = Math.round((p.stock + c.delta) * 100) / 100;
+  }
+}
+
+let toastTimer=null;
+function showToast(msg, type){
+  const wrap = document.getElementById('toastWrap');
+  wrap.innerHTML = `<div class="toast ${type||''}">${msg}</div>`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ wrap.innerHTML=''; }, 2800);
+}
+
+/* =========================================================
+   NAV / RENDER DISPATCH
+========================================================= */
+const TABS = [
+  {id:'paket',   label:'Paket',   icon:'🍬'},
+  {id:'stok',    label:'Stok',    icon:'📋'},
+  {id:'laporan', label:'Laporan', icon:'📊'},
+  {id:'resi',    label:'Resi',    icon:'📦'},
+  {id:'mutasi',  label:'Mutasi',  icon:'🔁'},
+];
+let activeTab = 'paket';
+
+function renderNav(){
+  const nav = document.getElementById('bottomnav');
+  nav.innerHTML = TABS.map(t => `
+    <button data-tab="${t.id}" class="${activeTab===t.id?'active':''}">
+      <span class="ic">${t.icon}</span><span>${t.label}</span>
+    </button>
+  `).join('');
+  nav.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      formOpen = false;
+      activeTab = btn.dataset.tab;
+      render();
+    });
+  });
+}
+
+function renderStats(){
+  const totalProduk = state.products.length;
+  const totalPaket = state.packages.length;
+  const stokMenipis = state.products.filter(p=>p.stock>0 && p.stock<=((p.criticalStock===undefined||p.criticalStock===null)?30:p.criticalStock)).length;
+  const stokHabis = state.products.filter(p=>p.stock<=0).length;
+  document.getElementById('statsStrip').innerHTML = `
+    <div class="stat-pill"><div class="num">${totalProduk}</div><div class="lbl">Produk</div></div>
+    <div class="stat-pill"><div class="num">${totalPaket}</div><div class="lbl">Paket</div></div>
+    <div class="stat-pill"><div class="num" style="color:${stokMenipis?'#FFD59A':'#fff'}">${stokMenipis}</div><div class="lbl">Stok Menipis</div></div>
+    <div class="stat-pill"><div class="num" style="color:${stokHabis?'#FFB3A3':'#fff'}">${stokHabis}</div><div class="lbl">Stok Habis</div></div>
+  `;
+}
+
+function render(){
+  renderNav();
+  renderStats();
+  const c = document.getElementById('content');
+  if(activeTab==='paket') c.innerHTML = viewPaket();
+  else if(activeTab==='stok') c.innerHTML = viewStok();
+  else if(activeTab==='laporan') c.innerHTML = viewLaporan();
+  else if(activeTab==='resi') c.innerHTML = viewResi();
+  else if(activeTab==='mutasi') c.innerHTML = viewMutasi();
+  bindViewEvents();
+  window.scrollTo(0,0);
+}
+
+/* =========================================================
+   VIEW: PAKET
+========================================================= */
+let paketFormState = null; // {id|null, name, sellPrice, items:[{productId,qty}]}
+
+/* ---------- HITUNG MODAL & UNTUNG ---------- */
+const DEFAULT_SETTINGS = { AdminPersen:17, Pemrosesan:1250, BLL:2320, Operasional:5000, PreOrderPersen:3 };
+function getSettings(){ return Object.assign({}, DEFAULT_SETTINGS, state.settings||{}); }
+
+function fmtRp(n){
+  const v = Math.round(Number(n)||0);
+  return (v<0?'-':'') + 'Rp ' + Math.abs(v).toLocaleString('id-ID');
+}
+
+// Modal = total (harga per biji x qty) semua isi paket.
+// missing = nama produk yang harganya belum diisi (modal jadi belum akurat).
+function calcModal(items){
+  let modal = 0; const missing = [];
+  for(const it of items){
+    if(!it.productId || !(it.qty>0)) continue;
+    const p = getProduct(it.productId);
+    if(!p) continue;
+    const price = Number(p.price)||0;
+    if(price<=0) missing.push(p.name);
+    modal += price * it.qty;
+  }
+  return {modal, missing};
+}
+
+// Untung bersih = harga jual - modal - admin(% dari harga jual) - pemrosesan - BLL - operasional
+// Kalau paket pre order: dikurangi lagi potongan PreOrderPersen% dari harga jual.
+function calcProfit(modal, sell, preOrder){
+  const st = getSettings();
+  const admin = Math.round(sell * st.AdminPersen / 100);
+  const po = preOrder ? Math.round(sell * st.PreOrderPersen / 100) : 0;
+  const fixed = st.Pemrosesan + st.BLL + st.Operasional;
+  const net = sell - modal - admin - po - fixed;
+  return {admin, po, proses: st.Pemrosesan, bll: st.BLL, ops: st.Operasional, fixed, net, adminPct: st.AdminPersen, poPct: st.PreOrderPersen};
+}
+
+// Harga jual paling kecil yang sudah tidak rugi (untung >= 0)
+function calcBreakEven(modal, preOrder){
+  const st = getSettings();
+  const fixed = st.Pemrosesan + st.BLL + st.Operasional;
+  const rate = (st.AdminPersen + (preOrder ? st.PreOrderPersen : 0))/100;
+  if(rate>=1) return 0;
+  let sell = Math.max(0, Math.floor((modal + fixed) / (1 - rate)) - 2);
+  while(calcProfit(modal, sell, preOrder).net < 0 && sell < 100000000) sell++;
+  return sell;
+}
+
+function renderPaketCalcSummary(f){
+  const {modal, missing} = calcModal(f.items);
+  const sell = Number(f.sellPrice)||0;
+  const pr = calcProfit(modal, sell, f.preOrder);
+  const hasSell = sell>0;
+  const cls = !hasSell ? 'neutral' : (pr.net<0 ? 'loss' : 'gain');
+  return `<div class="calc-top">
+      <div><div class="calc-lbl">Modal</div><div class="calc-val">${fmtRp(modal)}</div></div>
+      <div style="text-align:right;"><div class="calc-lbl">Untung bersih</div>
+        <div class="calc-val big ${cls}">${hasSell ? fmtRp(pr.net) : '—'}</div></div>
+    </div>
+    ${missing.length?`<div class="calc-warn">⚠️ Harga belum diisi untuk: ${missing.map(escHtml).join(', ')}. Modal belum akurat.</div>`:''}`;
+}
+
+function renderPaketCalcDetail(f){
+  const {modal} = calcModal(f.items);
+  const sell = Number(f.sellPrice)||0;
+  const pr = calcProfit(modal, sell, f.preOrder);
+  const be = calcBreakEven(modal, f.preOrder);
+  if(modal<=0 && sell<=0) return `<div class="small muted">Pilih produk dan isi harga jual, rincian untung akan muncul di sini.</div>`;
+  const margin = sell>0 ? (pr.net/sell*100) : 0;
+  return `<table class="calc-table">
+      <tr><td>Harga jual</td><td>${fmtRp(sell)}</td></tr>
+      <tr><td>Modal barang</td><td class="neg">− ${fmtRp(modal)}</td></tr>
+      <tr><td>Admin TikTok (${pr.adminPct}%)</td><td class="neg">− ${fmtRp(pr.admin)}</td></tr>
+      ${f.preOrder?`<tr><td>Potongan pre order (${pr.poPct}%)</td><td class="neg">− ${fmtRp(pr.po)}</td></tr>`:''}
+      <tr><td>Biaya pemrosesan</td><td class="neg">− ${fmtRp(pr.proses)}</td></tr>
+      <tr><td>Biaya BLL</td><td class="neg">− ${fmtRp(pr.bll)}</td></tr>
+      <tr><td>Biaya operasional</td><td class="neg">− ${fmtRp(pr.ops)}</td></tr>
+      <tr class="total"><td>Untung bersih</td><td class="${sell>0?(pr.net<0?'loss':'gain'):''}">${sell>0?fmtRp(pr.net):'—'}</td></tr>
+    </table>
+    <div class="small muted" style="margin-top:8px;">${sell>0?`Margin ${margin.toFixed(1)}% dari harga jual · `:''}Harga jual minimal agar tidak rugi: <b>${fmtRp(be)}</b></div>`;
+}
+
+function updatePaketCalc(){
+  if(!paketFormState) return;
+  const a = document.getElementById('pfCalcSummary');
+  const b = document.getElementById('pfCalcDetail');
+  paketFormState.items.forEach((it,idx)=>{
+    const el = document.getElementById('pfItemPrice'+idx);
+    if(el) el.innerHTML = paketItemPriceHTML(it);
+  });
+  if(a) a.innerHTML = renderPaketCalcSummary(paketFormState);
+  if(b) b.innerHTML = renderPaketCalcDetail(paketFormState);
+}
+
+function startNewPaket(){
+  formOpen = true;
+  paketFormState = { id:null, name:'', sellPrice:0, preOrder:false, items:[{productId:'', qty:1}] };
+  render();
+}
+// Paket lama yang qty-nya lebih dari 1 dibuka sebagai beberapa baris (1 baris = 1 biji)
+function expandPaketItems(items){
+  const out = [];
+  for(const it of items){
+    const n = Math.max(1, Math.round(Number(it.qty)||1));
+    for(let k=0;k<n;k++) out.push({productId: it.productId, qty:1});
+  }
+  return out.length ? out : [{productId:'', qty:1}];
+}
+
+function startEditPaket(id){
+  const pkg = getPackage(id);
+  formOpen = true;
+  paketFormState = { id: pkg.id, name: pkg.name, sellPrice: Number(pkg.sellPrice)||0, preOrder: !!pkg.preOrder, items: expandPaketItems(pkg.items) };
+  render();
+}
+function cancelPaketForm(){
+  formOpen = false;
+  paketFormState = null;
+  render();
+}
+
+function viewPaket(){
+  let html = `<div class="section-title"><h2>Kelola Paket</h2>`;
+  if(!paketFormState){
+    html += `<button class="btn btn-primary btn-sm" id="btnNewPaket">+ Paket Baru</button>`;
+  }
+  html += `</div>`;
+  if(!paketFormState){
+    const st = getSettings();
+    html += `<div class="small muted" style="margin:-4px 0 10px;">Potongan per pesanan: admin ${st.AdminPersen}% · proses ${fmtRp(st.Pemrosesan)} · BLL ${fmtRp(st.BLL)} · operasional ${fmtRp(st.Operasional)} · pre order +${st.PreOrderPersen}%. Ubah di tab <b>Pengaturan</b> pada spreadsheet.</div>`;
+  }
+
+  if(paketFormState){
+    const f = paketFormState;
+    html += `<div class="card">
+      <h3>${f.id ? 'Edit Paket' : 'Paket Baru'}</h3>
+      <div class="field">
+        <label>Nama Paket</label>
+        <input type="text" id="pfName" placeholder="Contoh: Paket Jos" value="${escAttr(f.name)}">
+      </div>
+      <label>Isi Paket</label>
+      <div id="pfItems">${f.items.map((it,idx)=>renderPaketItemRow(it, idx)).join('')}</div>
+      <button class="btn btn-ghost btn-sm" id="btnAddItemRow" type="button">+ Tambah Item</button>
+      <div class="divider"></div>
+      <div class="field">
+        <label>Harga jual di TikTok (Rp)</label>
+        <input type="number" inputmode="numeric" min="0" step="500" id="pfSellPrice" placeholder="Contoh: 85000" value="${f.sellPrice?f.sellPrice:''}" class="price-input">
+      </div>
+      <label class="check-row">
+        <input type="checkbox" id="pfPreOrder" ${f.preOrder?'checked':''}>
+        <span>Paket Pre Order <span class="muted">(potongan tambahan ${getSettings().PreOrderPersen}% dari harga jual)</span></span>
+      </label>
+      <div class="calc" id="pfCalc">
+        <div id="pfCalcSummary">${renderPaketCalcSummary(f)}</div>
+      </div>
+      <div class="calc-detail" id="pfCalcDetail">${renderPaketCalcDetail(f)}</div>
+      <div class="divider"></div>
+      <details class="quick-add">
+        <summary>+ Produk belum ada? Tambah langsung</summary>
+        <div class="field-row" style="flex-wrap:wrap;margin-top:8px;">
+          <input type="text" id="quickProdName" placeholder="Nama produk baru" style="flex:2 1 100%;">
+          <input type="number" inputmode="numeric" id="quickProdStock" placeholder="Stok awal" min="0">
+          <input type="number" inputmode="numeric" id="quickProdPrice" placeholder="Harga/biji" min="0">
+          <button class="btn btn-outline btn-sm" id="btnQuickAddProduct" type="button">+ Tambah</button>
+        </div>
+      </details>
+      <div class="divider"></div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary btn-block" id="btnSavePaket">💾 Simpan Paket</button>
+        <button class="btn btn-ghost" id="btnCancelPaket">Batal</button>
+      </div>
+    </div>`;
+  }
+
+  if(!state.packages.length && !paketFormState){
+    html += `<div class="empty-state"><span class="emoji">🍬</span>Belum ada paket. Buat paket pertama kamu, misalnya "Paket Jos" atau "Paket Sultan".</div>`;
+  } else {
+    for(const pkg of state.packages){
+      const {max} = maxSellable(pkg);
+      html += `<div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+          <span class="tag">${escHtml(pkg.name)}</span>${pkg.preOrder?' <span class="badge badge-warn" style="margin-left:6px;">Pre Order</span>':''}
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-ghost btn-sm" data-edit-paket="${pkg.id}">✏️</button>
+            <button class="btn btn-danger btn-sm" data-del-paket="${pkg.id}">🗑️</button>
+          </div>
+        </div>
+        <div class="small muted" style="margin-top:8px;">
+          ${groupPaketItems(pkg.items).map(it=>{
+            const p = getProduct(it.productId);
+            return `${escHtml(p?p.name:'(dihapus)')}${it.qty>1?` <span class="mono">×${it.qty}</span>`:''}`;
+          }).join(' &nbsp;·&nbsp; ')}
+        </div>
+        <div class="small" style="margin-top:6px;">Bisa dijual hari ini: <b class="mono">${max}</b> paket</div>
+        ${renderPaketCardMoney(pkg)}
+      </div>`;
+    }
+  }
+  return html;
+}
+
+function groupPaketItems(items){
+  const map = new Map();
+  for(const it of items){
+    const k = it.productId;
+    map.set(k, (map.get(k)||0) + (Number(it.qty)||0));
+  }
+  return [...map].map(([productId,qty])=>({productId,qty}));
+}
+
+function renderPaketCardMoney(pkg){
+  const {modal, missing} = calcModal(pkg.items);
+  const sell = Number(pkg.sellPrice)||0;
+  const pr = calcProfit(modal, sell, pkg.preOrder);
+  const cls = !sell ? 'neutral' : (pr.net<0 ? 'loss' : 'gain');
+  return `<div class="money-grid">
+      <div><div class="calc-lbl">Modal</div><div class="money-val">${fmtRp(modal)}</div></div>
+      <div><div class="calc-lbl">Harga jual</div><div class="money-val">${sell?fmtRp(sell):'<span class="muted">belum diisi</span>'}</div></div>
+      <div><div class="calc-lbl">Untung bersih</div><div class="money-val ${cls}">${sell?fmtRp(pr.net):'—'}</div></div>
+    </div>
+    ${missing.length?`<div class="calc-warn">⚠️ Harga belum diisi: ${missing.map(escHtml).join(', ')}</div>`:''}`;
+}
+
+// Kotak harga per biji di sebelah nama produk (menggantikan kotak qty)
+function paketItemPriceHTML(it){
+  const typed = String(it.productId||'').trim();
+  if(!typed) return '<span class="pp-empty">—</span>';
+  const p = getProduct(it.productId);
+  if(!p) return '<span class="pp-warn">tidak ada</span>';
+  const price = Number(p.price)||0;
+  if(price<=0) return '<span class="pp-warn">harga kosong</span>';
+  return `<span class="pp-val">${fmtRp(price)}</span><span class="pp-sub">per biji</span>`;
+}
+
+function renderPaketItemRow(it, idx){
+  return `<div class="item-row" data-idx="${idx}">
+    <div class="combo-wrap" style="flex:1 1 auto;min-width:0;">
+      <input type="text" data-field="productId" data-idx="${idx}" data-combo="pfProd${idx}" autocomplete="off"
+        placeholder="Ketik nama produk…" value="${escAttr(it.productId||'')}">
+      <div class="combo-dropdown" id="pfProdDropdown${idx}"></div>
+    </div>
+    <div class="price-pill" id="pfItemPrice${idx}">${paketItemPriceHTML(it)}</div>
+    <button class="icon-btn" data-remove-item="${idx}" type="button">✕</button>
+  </div>`;
+}
+
+/* =========================================================
+   VIEW: STOK
+========================================================= */
+let stokSearch = '';
+let editingStockId = null;
+let newProductForm = false;
+
+function viewStok(){
+  const rm_ = reservedMap();
+  let html = `<div class="section-title"><h2>Stok Produk</h2>
+    <button class="btn btn-primary btn-sm" id="btnNewProduct">+ Produk</button></div>`;
+
+  html += `<div class="field"><input type="search" id="stokSearchInput" placeholder="🔎 Cari produk…" value="${escAttr(stokSearch)}"></div>`;
+
+  if(newProductForm){
+    html += `<div class="card">
+      <h3>Produk Baru</h3>
+      <div class="field"><label>Nama Produk</label><input type="text" id="npName" placeholder="Contoh: Kue Lumpur"></div>
+      <div class="field-row">
+        <div class="field"><label>Stok Awal</label><input type="number" inputmode="numeric" id="npStock" min="0" value="0"></div>
+        <div class="field"><label>Harga per biji (Rp)</label><input type="number" inputmode="numeric" id="npPrice" min="0" value="0"></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary btn-block" id="btnSaveNewProduct">💾 Simpan</button>
+        <button class="btn btn-ghost" id="btnCancelNewProduct">Batal</button>
+      </div>
+    </div>`;
+  }
+
+  let list = sortedProducts();
+  if(stokSearch.trim()){
+    const q = stokSearch.trim().toLowerCase();
+    list = list.filter(p=>p.name.toLowerCase().includes(q));
+  }
+
+  if(!list.length){
+    html += `<div class="empty-state"><span class="emoji">📋</span>${state.products.length? 'Tidak ada produk yang cocok.' : 'Belum ada produk. Tambahkan produk pertama.'}</div>`;
+  } else {
+    html += `<div class="list-card">${list.map(p=>{
+      const crit = (p.criticalStock===undefined||p.criticalStock===null) ? 30 : p.criticalStock;
+      const price = Number(p.price)||0;
+      const badge = p.stock<=0 ? '<span class="badge badge-danger">Habis</span>'
+                    : p.stock<=crit ? '<span class="badge badge-warn">Menipis</span>'
+                    : '<span class="badge badge-ok">Aman</span>';
+      if(editingStockId === p.id){
+        return `<div class="list-row editing">
+          <div class="row-name">${escHtml(p.name)} ${badge}</div>
+          <div class="field" style="margin-top:8px;"><label>Nama produk</label><input type="text" id="adjNameInput" autocomplete="off" value="${escAttr(p.name)}"></div>
+          <div class="field-row">
+            <div class="field"><label>Stok</label><input type="number" inputmode="numeric" id="adjStockInput" value="${p.stock}"></div>
+            <div class="field"><label>Stok Kritis</label><input type="number" inputmode="numeric" id="adjCritInput" value="${crit}"></div>
+          </div>
+          <div class="field"><label>Harga per biji (Rp)</label><input type="number" inputmode="numeric" id="adjPriceInput" value="${price}"></div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-primary btn-block" data-save-stock="${escAttr(p.id)}">💾 Simpan</button>
+            <button class="btn btn-ghost" data-cancel-stock="1">Batal</button>
+          </div>
+        </div>`;
+      }
+      return `<div class="list-row">
+        <div class="row-main">
+          <div class="row-name">${escHtml(p.name)}</div>
+          <div class="row-sub">${badge} <span class="muted">kritis ${crit}</span> · ${price>0?`<span>${fmtRp(price)}/biji</span>`:'<span class="warn-text">harga belum diisi</span>'}</div>
+        </div>
+        <div class="row-stock stock-num">${p.stock}${(()=>{ const rv = rm_[p.id]||0; if(!rv) return ''; const e = p.stock - rv; return `<div class="est-line${e<=0?' neg':''}">Estimasi : ${e}</div>`; })()}</div>
+        <div class="row-actions">
+          <button class="btn btn-ghost btn-sm" data-edit-stock="${escAttr(p.id)}" title="Ubah stok, kritis & harga">✏️</button>
+          <button class="btn btn-danger btn-sm" data-del-product="${escAttr(p.id)}" title="Hapus produk">🗑️</button>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
+  }
+  return html;
+}
+
+/* =========================================================
+   VIEW: LAPORAN
+========================================================= */
+function viewLaporan(){
+  let html = `<div class="section-title"><h2>Laporan Stok Hari Ini</h2></div>`;
+
+  if(!state.packages.length){
+    html += `<div class="empty-state"><span class="emoji">📊</span>Buat paket dulu di menu Paket supaya laporan bisa dihitung.</div>`;
+  } else {
+    for(const pkg of state.packages){
+      const {max, bottleneck} = maxSellable(pkg);
+      const est = maxSellable(pkg, true);
+      const cls = max<=0 ? 'zero' : (max<=3 ? 'low' : 'ok');
+      html += `<div class="card max-card">
+        <div>
+          <span class="tag">${escHtml(pkg.name)}</span>${pkg.preOrder?' <span class="badge badge-warn" style="margin-left:6px;">Pre Order</span>':''}
+          <div class="small muted" style="margin-top:6px;">
+            ${max<=0 ? `Stok habis di: <b>${escHtml(bottleneck||'-')}</b>` : `Pembatas: <b>${escHtml(bottleneck||'-')}</b>`}
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div class="max-num ${cls}">${max}</div>
+          <div class="small muted">paket lagi</div>
+          ${est.max!==max ? `<div class="est-line${est.max<=0?' neg':''}">Estimasi : ${est.max}</div>` : ''}
+        </div>
+      </div>`;
+    }
+  }
+
+  const rmL = reservedMap();
+  const kritis = sortedProducts()
+    .filter(p=>{ const cr=((p.criticalStock===undefined||p.criticalStock===null)?30:p.criticalStock); return p.stock<=cr || estStockOf(p,rmL)<=cr; })
+    .sort((a,b)=>estStockOf(a,rmL)-estStockOf(b,rmL));
+  html += `<div class="section-title" style="margin-top:18px;"><h2>Stok Kritis</h2></div>`;
+  if(!kritis.length){
+    html += `<div class="empty-state"><span class="emoji">✅</span>Aman, tidak ada stok menipis.</div>`;
+  } else {
+    html += `<div class="card" style="padding:0;">
+      <table><thead><tr><th>Produk</th><th>Sisa Stok</th><th>Batas Kritis</th></tr></thead>
+      <tbody>${kritis.map(p=>{
+        const crit = (p.criticalStock===undefined||p.criticalStock===null)?30:p.criticalStock;
+        return `<tr><td>${escHtml(p.name)}</td><td class="stock-num" style="color:${p.stock<=0?'var(--danger)':(p.stock<=crit?'var(--warn)':'inherit')}">${p.stock}${(rmL[p.id]||0)?`<div class="est-line${estStockOf(p,rmL)<=0?' neg':''}">Estimasi : ${estStockOf(p,rmL)}</div>`:''}</td><td class="small muted">${crit}</td></tr>`;
+      }).join('')}</tbody>
+      </table>
+    </div>`;
+  }
+  return html;
+}
+
+/* =========================================================
+   VIEW: SCAN RESI (Import PDF + Scan Packing/Retur + Riwayat)
+========================================================= */
+let resiImportPreview = null; // array hasil parsing PDF sebelum disimpan
+let resiFilter = 'all';
+let resiManualInputOpen = false;
+
+function viewResi(){
+  let html = `<div class="section-title"><h2>Scan Resi</h2></div>`;
+
+  // --- Import PDF (resi baru, status awal "Belum Packing") ---
+  html += `<div class="card">
+    <h3>📥 Import Resi dari PDF Label</h3>
+    <div class="small muted" style="margin-bottom:8px;">Upload file PDF label pengiriman (hasil print dari marketplace). Resi & nama paketnya otomatis terbaca. Resi yang sudah pernah diimport sebelumnya otomatis dilewati.</div>
+    <input type="file" id="resiPdfInput" accept="application/pdf">
+    <div id="resiImportStatus" class="small muted" style="margin-top:6px;"></div>
+  </div>`;
+
+  if(resiImportPreview && resiImportPreview.length){
+    const validCount = resiImportPreview.filter(r=>!r.isDuplicate).length;
+    html += `<div class="card">
+      <h3>Pratinjau Hasil Baca (${resiImportPreview.length} baris)</h3>
+      <div class="small muted" style="margin-bottom:8px;">Semua nama produk di label dibaca; yang namanya cocok dengan paket di aplikasi otomatis terpasang. Baris bertanda 🔁 sudah ada di database (dilewati otomatis). Baris bertanda ⚠️ belum cocok ke paket manapun — pilih manual.</div>
+      <div style="overflow-x:auto;">
+      <table><thead><tr><th>Resi</th><th>Teks Asli</th><th>Cocokkan ke Paket</th><th>Qty</th></tr></thead>
+      <tbody>
+      ${resiImportPreview.map((r,idx)=>`<tr style="${r.isDuplicate?'opacity:0.5;':''}">
+        <td class="mono small">${escHtml(r.resi)}</td>
+        <td class="small">${escHtml(r.rawText)}${r.isDuplicate?' 🔁 <span class="small muted">sudah ada</span>':(!r.matchType?' ⚠️':'')}</td>
+        <td>
+          <select data-preview-match="${idx}" ${r.isDuplicate?'disabled':''}>
+            <option value="">— tidak dikenali —</option>
+            ${state.packages.map(p=>`<option value="paket:${escAttr(p.id)}" ${r.matchType==='paket'&&r.matchId===p.id?'selected':''}>${escHtml(p.name)}</option>`).join('')}
+          </select>
+        </td>
+        <td><input type="number" min="1" data-preview-qty="${idx}" value="${r.qty}" style="width:60px;" ${r.isDuplicate?'disabled':''}></td>
+      </tr>`).join('')}
+      </tbody></table>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px;">
+        <button class="btn btn-primary btn-block" id="btnSaveResiImport">💾 Simpan ${validCount} Baris Baru</button>
+        <button class="btn btn-ghost" id="btnCancelResiImport">Batal</button>
+      </div>
+    </div>`;
+  }
+
+  // --- Import Retur (xlsx dari marketplace) ---
+  html += `<div class="card">
+    <h3>↩️ Import Resi Retur (Excel)</h3>
+    <div class="small muted" style="margin-bottom:8px;">Upload file Excel retur harian. Semua nomer resi di file ini yang berstatus "Scan Packing" otomatis diubah jadi "Retur".</div>
+    <input type="file" id="resiReturXlsxInput" accept=".xlsx,.xls">
+    <div id="resiReturImportStatus" class="small muted" style="margin-top:6px;"></div>
+  </div>`;
+
+  // --- Scan ---
+  html += `<div class="card">
+    <h3>🔍 Scan Resi</h3>
+    <div class="small muted" style="margin:0 0 8px;">
+      Scan resi paket: kalau statusnya <b>Belum Packing</b> → stok otomatis berkurang & jadi <b>Scan Packing</b>. Kalau statusnya <b>Retur</b> (sudah diimport dari file retur) → scan untuk konfirmasi paket sudah fisik kembali, status jadi <b>Retur Cek</b>.
+    </div>
+    <input type="text" id="resiScanInput" inputmode="none" placeholder="Siap discan…" autocomplete="off" autofocus style="font-size:18px;padding:14px;">
+    <button class="btn btn-ghost btn-block" id="btnManualResiInput" style="margin-top:8px;" type="button">⌨️ Input Manual</button>
+    <div id="resiScanResult" style="margin-top:10px;"></div>
+  </div>`;
+
+  // --- Riwayat ---
+  html += `<div class="section-title" style="margin-top:8px;"><h2>Daftar Resi</h2></div>`;
+  html += `<div class="filter-chips">
+    ${['all','Belum Packing','Scan Packing','Retur','Retur Cek','Selesai'].map(f=>{
+      const lbl = f==='all' ? 'Semua' : f;
+      return `<button class="chip ${resiFilter===f?'active':''}" data-resi-filter="${f}">${lbl}</button>`;
+    }).join('')}
+  </div>`;
+
+  let list = state.resi||[];
+  if(resiFilter!=='all') list = list.filter(r=>r.status===resiFilter);
+  list = [...list].sort((a,b)=>(b.ts||0)-(a.ts||0));
+
+  if(!list.length){
+    html += `<div class="empty-state"><span class="emoji">📦</span>Belum ada data resi. Import PDF label dulu di atas.</div>`;
+  } else {
+    html += `<div class="list-card">${list.slice(0,200).map(r=>{
+        const badgeCls = {'Belum Packing':'badge-warn','Scan Packing':'badge-ok','Retur':'badge-danger','Retur Cek':'badge-in','Selesai':'badge-in'}[r.status]||'badge-warn';
+        return `<div class="list-row">
+          <div class="row-main">
+            <div class="row-name mono">${escHtml(r.resi)}</div>
+            <div class="row-sub">${escHtml(r.name)}${r.qty>1?` <b>×${r.qty}</b>`:''}${r.ket?` · <span class="muted">${escHtml(r.ket)}</span>`:''}</div>
+          </div>
+          <span class="badge ${badgeCls}">${escHtml(r.status)}</span>
+        </div>`;
+      }).join('')}</div>`;
+  }
+
+  return html;
+}
+
+/* =========================================================
+   VIEW: MUTASI (Barang Masuk / Retur / Riwayat)
+========================================================= */
+let mutasiFilter = 'all';
+let showMasukForm = false, showReturForm = false;
+let masukForm = {productId:'', qty:'', note:''};
+let returForm = {productId:'', qty:'', note:''};
+
+function viewMutasi(){
+  let html = `<div class="section-title"><h2>Mutasi Stok</h2></div>`;
+
+  html += `<div class="card">
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-teal btn-sm" id="btnToggleMasuk">📥 Barang Masuk</button>
+      <button class="btn btn-outline btn-sm" id="btnToggleRetur">↩️ Retur Produk</button>
+    </div>
+  </div>`;
+
+  if(showMasukForm){
+    html += `<div class="card">
+      <h3>📥 Barang Masuk dari Supplier</h3>
+      <div class="field combo-wrap"><label>Produk</label>
+        <input type="text" id="masukProduct" autocomplete="off" placeholder="Ketik nama produk…" value="${escAttr(masukForm.productId||'')}">
+        <div class="combo-dropdown" id="masukProductDropdown"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Qty Masuk</label><input type="number" id="masukQty" min="1" value="${masukForm.qty}"></div>
+        <div class="field" style="flex:2;"><label>Catatan (opsional)</label><input type="text" id="masukNote" placeholder="Contoh: dari Supplier Budi" value="${escAttr(masukForm.note)}"></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary btn-block" id="btnSaveMasuk">💾 Simpan</button>
+        <button class="btn btn-ghost" id="btnCancelMasuk">Batal</button>
+      </div>
+    </div>`;
+  }
+
+  if(showReturForm){
+    html += `<div class="card">
+      <h3>↩️ Retur Produk (Bisa Dijual Lagi)</h3>
+      <div class="field combo-wrap"><label>Produk</label>
+        <input type="text" id="returProduct" autocomplete="off" placeholder="Ketik nama produk…" value="${escAttr(returForm.productId||'')}">
+        <div class="combo-dropdown" id="returProductDropdown"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Qty Retur</label><input type="number" id="returQty" min="1" value="${returForm.qty}"></div>
+        <div class="field" style="flex:2;"><label>Catatan (opsional)</label><input type="text" id="returNote" placeholder="Contoh: retur dari toko A" value="${escAttr(returForm.note)}"></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary btn-block" id="btnSaveRetur">💾 Simpan</button>
+        <button class="btn btn-ghost" id="btnCancelRetur">Batal</button>
+      </div>
+    </div>`;
+  }
+
+  html += `<div class="section-title" style="margin-top:8px;"><h2>Riwayat</h2></div>`;
+  html += `<div class="filter-chips">
+    ${['all','sale','in','return','adjust'].map(f=>{
+      const lbl = {all:'Semua',sale:'Jual',in:'Masuk',return:'Retur',adjust:'Penyesuaian'}[f];
+      return `<button class="chip ${mutasiFilter===f?'active':''}" data-filter="${f}">${lbl}</button>`;
+    }).join('')}
+  </div>`;
+
+  let list = state.movements;
+  if(mutasiFilter!=='all') list = list.filter(m=>m.type===mutasiFilter);
+
+  if(!list.length){
+    html += `<div class="empty-state"><span class="emoji">🔁</span>Belum ada riwayat mutasi.</div>`;
+  } else {
+    html += list.slice(0,150).map(m=>{
+      const badgeCls = {sale:'badge-sale', in:'badge-in', return:'badge-return', adjust:'badge-adjust'}[m.type] || 'badge-in';
+      const badgeLbl = {sale:'Jual', in:'Masuk', return:'Retur', adjust:'Penyesuaian'}[m.type] || m.type;
+      const detail = m.changes.map(c=>`- ${escHtml(c.name)} <span class="mono">${c.delta>0?'+':''}${c.delta}</span>`).join('<br>');
+      return `<div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div>
+            <span class="badge ${badgeCls}">${badgeLbl}</span>
+            <div class="small" style="margin-top:6px;">${escHtml(m.note||'')}</div>
+            <div class="small muted" style="margin-top:4px;">${detail}</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="small muted">${fmtDate(m.ts)}</div>
+            <button class="btn btn-ghost btn-sm" style="margin-top:6px;" data-undo-movement="${m.id}">↩️ Batalkan</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  return html;
+}
+
+/* =========================================================
+   RESI: PARSING PDF LABEL
+========================================================= */
+let pdfjsReady = null;
+function ensurePdfJs(){
+  if(pdfjsReady) return pdfjsReady;
+  pdfjsReady = new Promise((resolve, reject)=>{
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+    s.onload = ()=>{
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      resolve();
+    };
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+  return pdfjsReady;
+}
+
+async function parseResiPdf(file){
+  await ensurePdfJs();
+  const buf = await file.arrayBuffer();
+  const pdf = await window.pdfjsLib.getDocument({data: buf}).promise;
+  const results = [];
+  const seenInBatch = new Set();
+  const existingResi = new Set((state.resi||[]).map(r=>r.resi));
+  for(let i=1;i<=pdf.numPages;i++){
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    const fullText = content.items.map(it=>it.str).join(' ').replace(/\s+/g,' ').trim();
+    if(!fullText) continue;
+    const rows = parseResiTextBlock(fullText);
+    for(const r of rows){
+      r.isDuplicate = existingResi.has(r.resi) || seenInBatch.has(r.resi);
+      seenInBatch.add(r.resi);
+      results.push(r);
+    }
+  }
+  return results;
+}
+
+// Beberapa label mencetak angka dengan spasi di antara tiap digit (kerning font),
+// hasilnya pdf.js membaca "5 7 0 6 3 4 5 6 4 2 1 5" alih-alih "570634564215".
+// Gabungkan dulu deretan digit-spasi-digit (8+ digit) jadi angka menyambung.
+function collapseSpacedDigits(text){
+  return text.replace(/\d(?: \d){7,}/g, m => m.replace(/ /g,''));
+}
+
+// Pecah satu blok teks halaman PDF (hasil extract) jadi satu atau lebih baris resi
+// Mengenali 2 format nomer resi:
+// 1) Format lama (J&T Express): 2 huruf + 10 digit, misal JY1821273076
+// 2) Format baru (J&T Cargo/FastTrack dll): angka polos 10-13 digit di bawah barcode
+function extractResiCode(text, orderId){
+  const old = text.match(/\b[A-Z]{2}\d{10}\b/);
+  if(old) return old[0];
+  const candidates = text.match(/\b\d{10,13}\b/g) || [];
+  for(const c of candidates){
+    if(c !== orderId) return c; // ambil angka 10-13 digit pertama yang bukan Order ID
+  }
+  return null;
+}
+
+function parseResiTextBlock(rawText){
+  const out = [];
+  const text = collapseSpacedDigits(rawText);
+
+  // order id: angka panjang setelah "Order Id" / "TT Order ID" / "Order ID"
+  const orderIdMatch = text.match(/Order\s*Id\s*:?\s*(\d{10,})/i);
+  const orderId = orderIdMatch ? orderIdMatch[1] : '';
+
+  const resi = extractResiCode(text, orderId);
+  if(!resi) return out;
+
+  // ambil blok antara header tabel produk dan "Qty Total"
+  const prodMatch = text.match(/Product Name\s*SKU\s*Seller SKU\s*Qty\s*(.*?)\s*Qty Total\s*:\s*\d+/i);
+  if(!prodMatch) return out;
+  let chunk = prodMatch[1].trim();
+  // chunk biasanya diakhiri "...Default <qty>" — pisahkan nama produk dari "Default <qty>" di akhir
+  const tailMatch = chunk.match(/^(.*?)\s*Default\s+(\d+)\s*$/i);
+  let productText, qtyTotal;
+  if(tailMatch){ productText = tailMatch[1].trim(); qtyTotal = parseInt(tailMatch[2])||1; }
+  else { productText = chunk; qtyTotal = 1; }
+
+  // Semua nama produk dibaca (tidak harus berawalan "PAKET"). Yang namanya cocok dengan
+  // paket di aplikasi otomatis terpasang; yang tidak cocok ditandai & tidak diimpor kecuali dipilih manual.
+  if(!productText.trim()) return out;
+
+  out.push(makeResiRow(resi, orderId, productText, qtyTotal));
+  return out;
+}
+
+function makeResiRow(resi, orderId, rawText, qty){
+  const match = findBestMatch(rawText);
+  return {
+    resi, orderId, rawText, qty: qty||1,
+    matchType: match ? match.type : null,
+    matchId: match ? match.id : null
+  };
+}
+
+// Coba cocokkan nama paket dari label ke paket yang sudah ada di sistem
+function findBestMatch(text){
+  const norm = s => s.toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+  const t = norm(text);
+  let best = null, bestLen = 0;
+  for(const pkg of state.packages){
+    const n = norm(pkg.name);
+    if(n && (t.includes(n) || n.includes(t)) && n.length>bestLen){
+      best = {type:'paket', id:pkg.id}; bestLen = n.length;
+    }
+  }
+  return best;
+}
+
+/* =========================================================
+   RESI: IMPORT RETUR DARI EXCEL
+========================================================= */
+let xlsxReady = null;
+function ensureXlsxLib(){
+  if(xlsxReady) return xlsxReady;
+  xlsxReady = new Promise((resolve, reject)=>{
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+  return xlsxReady;
+}
+
+// Scan semua sel di semua sheet file Excel, cari pola nomer resi.
+// Mengenali 2 format sekaligus: huruf+10 digit (format lama, mis. JY1821273076)
+// dan angka polos 10-13 digit (format baru, mis. 570634564215).
+async function parseReturXlsx(file){
+  await ensureXlsxLib();
+  const buf = await file.arrayBuffer();
+  const wb = window.XLSX.read(buf, {type:'array'});
+  const found = new Set();
+  const resiPattern = /\b[A-Z]{2}\d{10}\b|\b\d{10,13}\b/g;
+  wb.SheetNames.forEach(sheetName=>{
+    const sheet = wb.Sheets[sheetName];
+    // raw:true (bukan raw:false) — kalau sel resi tersimpan sebagai ANGKA, versi
+    // "sudah diformat" (raw:false) malah membulatkannya ke notasi ilmiah
+    // (misal 570633287747 jadi "5.70633E+11"). Nilai mentah angka tetap presisi.
+    const rows = window.XLSX.utils.sheet_to_json(sheet, {header:1, raw:true});
+    rows.forEach(row=>{
+      row.forEach(cell=>{
+        if(cell==null) return;
+        const str = String(cell);
+        let m;
+        while((m = resiPattern.exec(str))){ found.add(m[0]); }
+      });
+    });
+  });
+  return [...found];
+}
+
+/* =========================================================
+   RESI: PROSES SCAN (satu alur, berdasarkan status saat ini)
+========================================================= */
+function findResiEntries(code){
+  return (state.resi||[]).filter(r=>r.resi===code);
+}
+
+async function processResiScan(code){
+  const entries = findResiEntries(code);
+  if(!entries.length){
+    const el = document.getElementById('resiScanResult');
+    if(el) el.innerHTML = `<div class="small" style="color:var(--danger);">❌ Resi <b>${escHtml(code)}</b> tidak ditemukan di database. Pastikan sudah di-import dari PDF.</div>`;
+    return;
+  }
+
+  // Resi berstatus Retur -> scan ini adalah konfirmasi paket sudah fisik kembali
+  const allRetur = entries.every(r=>r.status==='Retur');
+  if(allRetur){
+    for(const r of entries) r.status = 'Retur Cek';
+    render();
+    saveState();
+    const el = document.getElementById('resiScanResult');
+    if(el) el.innerHTML = `<div class="small" style="color:var(--teal);">↩️✅ Resi <b>${escHtml(code)}</b> dikonfirmasi diterima kembali — status jadi <b>Retur Cek</b>. Jangan lupa cek fisik barang & tambahkan stok yang masih layak jual lewat menu Mutasi &gt; Retur.</div>`;
+    return;
+  }
+
+  const alreadyChecked = entries.every(r=>r.status==='Retur Cek');
+  if(alreadyChecked){
+    const el = document.getElementById('resiScanResult');
+    if(el) el.innerHTML = `<div class="small muted">Resi ini sudah dikonfirmasi Retur Cek sebelumnya.</div>`;
+    return;
+  }
+
+  const alreadyScanned = entries.every(r=>r.status==='Scan Packing');
+  if(alreadyScanned){
+    const el = document.getElementById('resiScanResult');
+    if(el) el.innerHTML = `<div class="small" style="color:var(--warn);">⚠️ Resi <b>${escHtml(code)}</b> sudah pernah di-scan packing sebelumnya. Stok tidak dikurangi lagi.</div>`;
+    return;
+  }
+
+  // Default: proses packing untuk baris yang masih "Belum Packing"
+  const summary = [];
+  const warnings = [];
+  for(const r of entries){
+    if(r.status!=='Belum Packing'){ continue; }
+    if(r.matchType==='paket'){
+      const pkg = getPackage(r.matchId) || getPackage(r.name);
+      if(pkg){
+        const missing = [];
+        const changes = pkg.items.map(it=>{
+          const p = getProduct(it.productId);
+          if(!p) missing.push(it.productId);
+          return {productId: it.productId, name: p?p.name:'(dihapus)', delta: -(it.qty*r.qty)};
+        });
+        applyChangesToStock(changes);
+        addMovement('sale', `Scan resi ${r.resi} — paket "${pkg.name}" x${r.qty}`, changes, {resi:r.resi, packageId:pkg.id});
+        summary.push(`${pkg.name} x${r.qty}`);
+        if(missing.length) warnings.push(`Produk "${missing.join(', ')}" dalam paket "${pkg.name}" tidak ketemu — stok produk itu TIDAK dikurangi.`);
+      } else {
+        warnings.push(`Paket "${r.name}" tidak ditemukan di halaman Paket — stok tidak dikurangi sama sekali untuk resi ini.`);
+      }
+    } else {
+      warnings.push(`Baris resi ini belum dicocokkan ke paket manapun — stok tidak dikurangi.`);
+    }
+    r.status = 'Scan Packing';
+  }
+  render();
+  saveState();
+  let msg = summary.length
+    ? `<div class="small" style="color:var(--success);">✅ Resi <b>${escHtml(code)}</b> — stok dikurangi: ${summary.map(escHtml).join(', ')}.</div>`
+    : `<div class="small muted">Resi ditemukan tapi tidak ada baris yang diproses.</div>`;
+  if(warnings.length) msg += warnings.map(w=>`<div class="small" style="color:var(--danger);margin-top:4px;">⚠️ ${escHtml(w)}</div>`).join('');
+  const el = document.getElementById('resiScanResult');
+  if(el) el.innerHTML = msg;
+}
+
+/* =========================================================
+   ESCAPE HELPERS
+========================================================= */
+/* =========================================================
+   KOMPONEN: COMBO DROPDOWN PENCARIAN PRODUK
+========================================================= */
+// Memasang perilaku "laci" dropdown pada satu pasangan input+div.
+// inputEl: <input type="text">, dropdownEl: <div class="combo-dropdown">
+// onPick(name): dipanggil saat user memilih salah satu saran
+function attachProductCombo(inputEl, dropdownEl, onPick){
+  if(!inputEl || !dropdownEl) return;
+  let activeIdx = -1;
+  function items_(){ return Array.from(dropdownEl.querySelectorAll('[data-pick]')); }
+  function isOpen(){ return dropdownEl.classList.contains('show'); }
+  function setActive(i, scroll){
+    const els = items_();
+    if(!els.length){ activeIdx = -1; return; }
+    activeIdx = (i + els.length) % els.length;
+    els.forEach((el,k)=>el.classList.toggle('active', k===activeIdx));
+    if(scroll) els[activeIdx].scrollIntoView({block:'nearest'});
+  }
+  function pick(name){
+    inputEl.value = name;
+    inputEl.classList.remove('invalid-combo');
+    dropdownEl.classList.remove('show');
+    activeIdx = -1;
+    onPick(name);
+  }
+  function renderList(filterText){
+    const q = (filterText||'').trim().toLowerCase();
+    let items = sortedProducts();
+    if(q) items = items.filter(p=>p.name.toLowerCase().includes(q));
+    items = items.slice(0,30);
+    activeIdx = -1;
+    if(!items.length){ dropdownEl.classList.remove('show'); dropdownEl.innerHTML=''; return; }
+    dropdownEl.innerHTML = items.map(p=>`<div class="combo-item" data-pick="${escAttr(p.name)}">${escHtml(p.name)}<span class="stock-hint">stok ${p.stock}${Number(p.price)>0?' · '+fmtRp(p.price):''}</span></div>`).join('');
+    dropdownEl.classList.add('show');
+    items_().forEach((el,k)=>{
+      el.addEventListener('mousedown', ev=>{ ev.preventDefault(); pick(el.dataset.pick); });
+      el.addEventListener('mouseenter', ()=>setActive(k,false));
+    });
+    // saat mengetik, otomatis sorot saran pertama supaya "ketik lalu Enter" bisa
+    if(q) setActive(0,false);
+  }
+  inputEl.addEventListener('input', ()=>{ renderList(inputEl.value); onPick(inputEl.value.trim(), true); });
+  inputEl.addEventListener('focus', ()=>{ renderList(inputEl.value); });
+  inputEl.addEventListener('blur', ()=>{ setTimeout(()=>dropdownEl.classList.remove('show'), 150); });
+  inputEl.addEventListener('keydown', ev=>{
+    if(ev.key==='ArrowDown' || ev.key==='ArrowUp'){
+      ev.preventDefault();
+      if(!isOpen()){ renderList(inputEl.value); setActive(ev.key==='ArrowDown'?0:-1, true); return; }
+      setActive(activeIdx<0 ? (ev.key==='ArrowDown'?0:-1) : activeIdx + (ev.key==='ArrowDown'?1:-1), true);
+    } else if(ev.key==='Enter'){
+      if(isOpen() && activeIdx>=0){
+        const el = items_()[activeIdx];
+        if(el){ ev.preventDefault(); pick(el.dataset.pick); }
+      }
+    } else if(ev.key==='Escape' || ev.key==='Tab'){
+      dropdownEl.classList.remove('show');
+    }
+  });
+}
+
+function escHtml(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function escAttr(s){ return escHtml(s); }
+
+/* =========================================================
+   EVENT BINDING (delegated per render)
+========================================================= */
+function bindViewEvents(){
+  const c = document.getElementById('content');
+
+  /* ---------- PAKET ---------- */
+  const btnNewPaket = document.getElementById('btnNewPaket');
+  if(btnNewPaket) btnNewPaket.addEventListener('click', startNewPaket);
+
+  const pfName = document.getElementById('pfName');
+  if(pfName) pfName.addEventListener('input', e=>{ paketFormState.name = e.target.value; });
+
+  // field qty (produk-id ditangani terpisah lewat combo dropdown di bawah)
+  c.querySelectorAll('#pfItems [data-field="qty"]').forEach(el=>{
+    el.addEventListener('input', e=>{
+      const idx = parseInt(e.target.dataset.idx);
+      if(paketFormState){ paketFormState.items[idx].qty = parseFloat(e.target.value)||0; updatePaketCalc(); }
+    });
+  });
+  const pfPreOrder = document.getElementById('pfPreOrder');
+  if(pfPreOrder) pfPreOrder.addEventListener('change', e=>{
+    paketFormState.preOrder = e.target.checked;
+    updatePaketCalc();
+  });
+  const pfSellPrice = document.getElementById('pfSellPrice');
+  if(pfSellPrice) pfSellPrice.addEventListener('input', e=>{
+    paketFormState.sellPrice = parseFloat(e.target.value)||0;
+    updatePaketCalc();
+  });
+  // combo dropdown nama produk di setiap baris isi paket
+  c.querySelectorAll('#pfItems input[data-field="productId"]').forEach(input=>{
+    const idx = parseInt(input.dataset.idx);
+    const dropdown = document.getElementById('pfProdDropdown'+idx);
+    attachProductCombo(input, dropdown, (typed)=>{
+      const match = state.products.find(p=>p.name.toLowerCase()===typed.toLowerCase());
+      paketFormState.items[idx].productId = match ? match.id : typed;
+      input.classList.toggle('invalid-combo', typed.length>0 && !match);
+      updatePaketCalc();
+    });
+  });
+
+  const btnAddItemRow = document.getElementById('btnAddItemRow');
+  if(btnAddItemRow) btnAddItemRow.addEventListener('click', ()=>{
+    paketFormState.items.push({productId:'', qty:1});
+    render();
+  });
+
+  c.querySelectorAll('[data-remove-item]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const idx = parseInt(btn.dataset.removeItem);
+      paketFormState.items.splice(idx,1);
+      if(!paketFormState.items.length) paketFormState.items.push({productId:'',qty:1});
+      render();
+    });
+  });
+
+  const btnQuickAddProduct = document.getElementById('btnQuickAddProduct');
+  if(btnQuickAddProduct) btnQuickAddProduct.addEventListener('click', async ()=>{
+    const nameEl = document.getElementById('quickProdName');
+    const stockEl = document.getElementById('quickProdStock');
+    const name = nameEl.value.trim();
+    if(!name){ showToast('Nama produk wajib diisi','error'); return; }
+    if(state.products.some(p=>p.name.toLowerCase()===name.toLowerCase())){ showToast('Nama produk sudah ada','error'); return; }
+    const stock = parseFloat(stockEl.value)||0;
+    const newP = {id:name, name, stock, criticalStock:30, price: parseFloat((document.getElementById('quickProdPrice')||{}).value)||0};
+    state.products.push(newP);
+    showToast('Produk baru ditambahkan');
+    render();
+    saveState();
+  });
+
+  const btnSavePaket = document.getElementById('btnSavePaket');
+  if(btnSavePaket) btnSavePaket.addEventListener('click', async ()=>{
+    const f = paketFormState;
+    if(!f.name.trim()){ showToast('Nama paket wajib diisi','error'); return; }
+    const rawItems = f.items.filter(it=>it.productId && it.qty>0);
+    const items = [];
+    let invalidCount = 0;
+    for(const it of rawItems){
+      const p = getProduct(it.productId);
+      if(!p){ invalidCount++; continue; }
+      items.push({productId: p.id, qty: it.qty});
+    }
+    if(!items.length){ showToast('Isi minimal 1 produk yang valid (pilih dari daftar saran) dengan qty > 0','error'); return; }
+    if(invalidCount>0){ showToast(invalidCount+' item diabaikan karena nama produk tidak ditemukan di daftar','error'); }
+    const trimmedName = f.name.trim();
+    if(f.id){
+      const pkg = getPackage(f.id);
+      if(state.packages.some(p=>p.id!==f.id && p.name.toLowerCase()===trimmedName.toLowerCase())){ showToast('Nama paket sudah dipakai paket lain','error'); return; }
+      pkg.name = trimmedName;
+      pkg.items = items;
+      pkg.sellPrice = Number(f.sellPrice)||0;
+      pkg.preOrder = !!f.preOrder;
+    } else {
+      if(state.packages.some(p=>p.name.toLowerCase()===trimmedName.toLowerCase())){ showToast('Nama paket sudah ada','error'); return; }
+      state.packages.push({id:trimmedName, name:trimmedName, items, sellPrice: Number(f.sellPrice)||0, preOrder: !!f.preOrder});
+    }
+    showToast('Paket disimpan', 'success');
+    formOpen = false;
+    paketFormState = null;
+    render();
+    saveState();
+  });
+
+  const btnCancelPaket = document.getElementById('btnCancelPaket');
+  if(btnCancelPaket) btnCancelPaket.addEventListener('click', cancelPaketForm);
+
+  c.querySelectorAll('[data-edit-paket]').forEach(btn=>{
+    btn.addEventListener('click', ()=> startEditPaket(btn.dataset.editPaket));
+  });
+  c.querySelectorAll('[data-del-paket]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      if(!confirm('Hapus paket ini? Riwayat mutasi lama tidak akan berubah.')) return;
+      state.packages = state.packages.filter(p=>p.id!==btn.dataset.delPaket);
+      showToast('Paket dihapus');
+      render();
+      saveState();
+    });
+  });
+
+  /* ---------- STOK ---------- */
+  const stokSearchInput = document.getElementById('stokSearchInput');
+  if(stokSearchInput){
+    let searchDebounce = null;
+    stokSearchInput.addEventListener('input', e=>{
+      const focusVal = e.target.value;
+      stokSearch = focusVal;
+      clearTimeout(searchDebounce);
+      searchDebounce = setTimeout(()=>{
+        render();
+        const again = document.getElementById('stokSearchInput');
+        if(again){ again.focus(); again.value = focusVal; again.setSelectionRange(focusVal.length, focusVal.length); }
+      }, 200);
+    });
+  }
+
+  const btnNewProduct = document.getElementById('btnNewProduct');
+  if(btnNewProduct) btnNewProduct.addEventListener('click', ()=>{ newProductForm = true; formOpen = true; render(); });
+
+  const btnSaveNewProduct = document.getElementById('btnSaveNewProduct');
+  if(btnSaveNewProduct) btnSaveNewProduct.addEventListener('click', async ()=>{
+    const name = document.getElementById('npName').value.trim();
+    const stock = parseFloat(document.getElementById('npStock').value)||0;
+    if(!name){ showToast('Nama produk wajib diisi','error'); return; }
+    if(state.products.some(p=>p.name.toLowerCase()===name.toLowerCase())){ showToast('Nama produk sudah ada','error'); return; }
+    state.products.push({id:name, name, stock, criticalStock:30, price: parseFloat(document.getElementById('npPrice').value)||0});
+    await saveState();
+    newProductForm = false; formOpen = false;
+    showToast('Produk ditambahkan','success');
+    render();
+  });
+  const btnCancelNewProduct = document.getElementById('btnCancelNewProduct');
+  if(btnCancelNewProduct) btnCancelNewProduct.addEventListener('click', ()=>{ newProductForm=false; formOpen=false; render(); });
+
+  c.querySelectorAll('[data-edit-stock]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ editingStockId = btn.dataset.editStock; formOpen=true; render(); });
+  });
+  c.querySelectorAll('[data-cancel-stock]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ editingStockId = null; formOpen=false; render(); });
+  });
+  c.querySelectorAll('[data-save-stock]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const pid = btn.dataset.saveStock;
+      const p = getProduct(pid);
+      const newVal = parseFloat(document.getElementById('adjStockInput').value);
+      const newCrit = parseFloat(document.getElementById('adjCritInput').value);
+      if(isNaN(newVal)){ showToast('Nilai stok tidak valid','error'); return; }
+      const newName = (document.getElementById('adjNameInput').value||'').trim();
+      if(!newName){ showToast('Nama produk wajib diisi','error'); return; }
+      if(newName !== p.name){
+        if(state.products.some(x=>x!==p && x.name.toLowerCase()===newName.toLowerCase())){ showToast('Nama produk sudah ada','error'); return; }
+        const oldId = p.id;
+        // nama = ID, jadi semua referensi ikut diganti
+        state.packages.forEach(pkg=>pkg.items.forEach(it=>{ if(it.productId===oldId) it.productId = newName; }));
+        state.movements.forEach(m=>(m.changes||[]).forEach(ch=>{ if(ch.productId===oldId){ ch.productId=newName; ch.name=newName; } }));
+        p.id = newName; p.name = newName;
+      }
+      const delta = newVal - p.stock;
+      if(delta!==0){
+        addMovement('adjust', 'Penyesuaian manual stok', [{productId:p.id, name:p.name, delta}]);
+        p.stock = newVal;
+      }
+      p.criticalStock = isNaN(newCrit) ? 30 : newCrit;
+      const newPrice = parseFloat(document.getElementById('adjPriceInput').value);
+      p.price = isNaN(newPrice) ? (Number(p.price)||0) : Math.max(0,newPrice);
+      editingStockId = null; formOpen=false;
+      render();
+      saveState();
+      showToast('Stok diperbarui','success');
+    });
+  });
+  c.querySelectorAll('[data-del-product]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const pid = btn.dataset.delProduct;
+      const usedIn = state.packages.filter(pkg=>pkg.items.some(it=>it.productId===pid));
+      if(usedIn.length){
+        showToast('Tidak bisa dihapus, masih dipakai di paket: '+usedIn.map(p=>p.name).join(', '), 'error');
+        return;
+      }
+      if(!confirm('Hapus produk ini?')) return;
+      state.products = state.products.filter(p=>p.id!==pid);
+      await saveState();
+      showToast('Produk dihapus');
+      render();
+    });
+  });
+
+  /* ---------- SCAN RESI ---------- */
+  const resiPdfInput = document.getElementById('resiPdfInput');
+  if(resiPdfInput) resiPdfInput.addEventListener('change', async e=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const statusEl = document.getElementById('resiImportStatus');
+    statusEl.textContent = 'Membaca PDF…';
+    try{
+      const parsed = await parseResiPdf(file);
+      if(!parsed.length){
+        statusEl.textContent = 'Tidak ada label resi yang terbaca dari PDF ini.';
+        return;
+      }
+      resiImportPreview = parsed;
+      statusEl.textContent = '';
+      render();
+    }catch(err){
+      statusEl.textContent = 'Gagal membaca PDF: ' + (err.message||err);
+    }
+  });
+
+  c.querySelectorAll('[data-preview-match]').forEach(sel=>{
+    sel.addEventListener('change', e=>{
+      const idx = parseInt(e.target.dataset.previewMatch);
+      const val = e.target.value;
+      if(!val){ resiImportPreview[idx].matchType=null; resiImportPreview[idx].matchId=null; }
+      else {
+        const [type,id] = val.split(/:(.+)/);
+        resiImportPreview[idx].matchType = type;
+        resiImportPreview[idx].matchId = id;
+      }
+    });
+  });
+  c.querySelectorAll('[data-preview-qty]').forEach(inp=>{
+    inp.addEventListener('input', e=>{
+      const idx = parseInt(e.target.dataset.previewQty);
+      resiImportPreview[idx].qty = parseFloat(e.target.value)||1;
+    });
+  });
+
+  const btnSaveResiImport = document.getElementById('btnSaveResiImport');
+  if(btnSaveResiImport) btnSaveResiImport.addEventListener('click', async ()=>{
+    let added = 0, skipped = 0, duplicate = 0;
+    const existing = new Set((state.resi||[]).map(r=>r.resi));
+    for(const r of resiImportPreview){
+      if(r.isDuplicate || existing.has(r.resi)){ duplicate++; continue; }
+      if(!r.matchType || !r.matchId){ skipped++; continue; }
+      let name = r.rawText;
+      const pkg=getPackage(r.matchId); if(pkg) name=pkg.name;
+      state.resi.push({
+        id: uid(), resi: r.resi, orderId: r.orderId||'', ts: Date.now(),
+        matchType: r.matchType, matchId: r.matchId, name, qty: r.qty,
+        status: 'Belum Packing', ket: r.qty>1 ? 'Qty lebih dari 1' : ''
+      });
+      existing.add(r.resi);
+      added++;
+    }
+    resiImportPreview = null;
+    render();
+    saveState();
+    showToast(`${added} baris disimpan${skipped?`, ${skipped} dilewati (belum dicocokkan)`:''}${duplicate?`, ${duplicate} dilewati (resi sudah ada)`:''}`, 'success');
+  });
+  const btnCancelResiImport = document.getElementById('btnCancelResiImport');
+  if(btnCancelResiImport) btnCancelResiImport.addEventListener('click', ()=>{ resiImportPreview = null; render(); });
+
+  const resiReturXlsxInput = document.getElementById('resiReturXlsxInput');
+  if(resiReturXlsxInput) resiReturXlsxInput.addEventListener('change', async e=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const statusEl = document.getElementById('resiReturImportStatus');
+    statusEl.textContent = 'Membaca file Excel…';
+    try{
+      const resiCodes = await parseReturXlsx(file);
+      if(!resiCodes.length){
+        statusEl.textContent = 'Tidak ada nomer resi yang terbaca dari file ini.';
+        return;
+      }
+      let changed = 0, notFound = 0, alreadyRetur = 0;
+      for(const code of resiCodes){
+        const entries = findResiEntries(code);
+        if(!entries.length){ notFound++; continue; }
+        let any = false;
+        for(const r of entries){
+          if(r.status==='Scan Packing'){ r.status='Retur'; any=true; }
+          else if(r.status==='Retur' || r.status==='Retur Cek'){ alreadyRetur++; }
+        }
+        if(any) changed++;
+      }
+      render();
+      saveState();
+      statusEl.textContent = '';
+      showToast(`${changed} resi diubah jadi Retur${notFound?`, ${notFound} tidak ditemukan di database`:''}${alreadyRetur?`, ${alreadyRetur} sudah berstatus Retur`:''}`, 'success');
+      e.target.value = '';
+    }catch(err){
+      statusEl.textContent = 'Gagal membaca file: ' + (err.message||err);
+    }
+  });
+
+  c.querySelectorAll('[data-resi-filter]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ resiFilter = btn.dataset.resiFilter; render(); });
+  });
+
+  const resiScanInput = document.getElementById('resiScanInput');
+  if(resiScanInput){
+    resiScanInput.focus();
+    resiScanInput.addEventListener('keydown', e=>{
+      if(e.key==='Enter'){
+        e.preventDefault();
+        const code = e.target.value.trim();
+        if(code) processResiScan(code);
+        e.target.value = '';
+      }
+    });
+  }
+  const btnManualResiInput = document.getElementById('btnManualResiInput');
+  if(btnManualResiInput) btnManualResiInput.addEventListener('click', ()=>{
+    const code = window.prompt('Masukkan nomer resi secara manual:');
+    if(code && code.trim()) processResiScan(code.trim());
+  });
+
+  /* ---------- MUTASI ---------- */
+  const btnToggleMasuk = document.getElementById('btnToggleMasuk');
+  if(btnToggleMasuk) btnToggleMasuk.addEventListener('click', ()=>{
+    showMasukForm = !showMasukForm; showReturForm=false; formOpen = showMasukForm; render();
+  });
+  const btnToggleRetur = document.getElementById('btnToggleRetur');
+  if(btnToggleRetur) btnToggleRetur.addEventListener('click', ()=>{
+    showReturForm = !showReturForm; showMasukForm=false; formOpen = showReturForm; render();
+  });
+
+  const masukProduct = document.getElementById('masukProduct');
+  attachProductCombo(masukProduct, document.getElementById('masukProductDropdown'), (typed)=>{
+    const match = state.products.find(p=>p.name.toLowerCase()===typed.toLowerCase());
+    masukForm.productId = match ? match.id : typed;
+    if(masukProduct) masukProduct.classList.toggle('invalid-combo', typed.length>0 && !match);
+  });
+  const masukQty = document.getElementById('masukQty');
+  if(masukQty) masukQty.addEventListener('input', e=>{ masukForm.qty = e.target.value; });
+  const masukNote = document.getElementById('masukNote');
+  if(masukNote) masukNote.addEventListener('input', e=>{ masukForm.note = e.target.value; });
+
+  const btnSaveMasuk = document.getElementById('btnSaveMasuk');
+  if(btnSaveMasuk) btnSaveMasuk.addEventListener('click', async ()=>{
+    const p = getProduct(masukForm.productId);
+    const qty = parseFloat(masukForm.qty)||0;
+    if(!p){ showToast('Pilih produk','error'); return; }
+    if(qty<=0){ showToast('Qty harus lebih dari 0','error'); return; }
+    const changes = [{productId:p.id, name:p.name, delta:qty}];
+    applyChangesToStock(changes);
+    addMovement('in', masukForm.note ? `Barang masuk: ${masukForm.note}` : 'Barang masuk dari supplier', changes);
+    await saveState();
+    masukForm = {productId:'',qty:'',note:''};
+    showMasukForm = false; formOpen=false;
+    showToast('Stok masuk tercatat','success');
+    render();
+  });
+  const btnCancelMasuk = document.getElementById('btnCancelMasuk');
+  if(btnCancelMasuk) btnCancelMasuk.addEventListener('click', ()=>{ showMasukForm=false; formOpen=false; render(); });
+
+  const returProduct = document.getElementById('returProduct');
+  attachProductCombo(returProduct, document.getElementById('returProductDropdown'), (typed)=>{
+    const match = state.products.find(p=>p.name.toLowerCase()===typed.toLowerCase());
+    returForm.productId = match ? match.id : typed;
+    if(returProduct) returProduct.classList.toggle('invalid-combo', typed.length>0 && !match);
+  });
+  const returQty = document.getElementById('returQty');
+  if(returQty) returQty.addEventListener('input', e=>{ returForm.qty = e.target.value; });
+  const returNote = document.getElementById('returNote');
+  if(returNote) returNote.addEventListener('input', e=>{ returForm.note = e.target.value; });
+
+  const btnSaveRetur = document.getElementById('btnSaveRetur');
+  if(btnSaveRetur) btnSaveRetur.addEventListener('click', async ()=>{
+    const p = getProduct(returForm.productId);
+    const qty = parseFloat(returForm.qty)||0;
+    if(!p){ showToast('Pilih produk','error'); return; }
+    if(qty<=0){ showToast('Qty harus lebih dari 0','error'); return; }
+    const changes = [{productId:p.id, name:p.name, delta:qty}];
+    applyChangesToStock(changes);
+    addMovement('return', returForm.note ? `Retur: ${returForm.note}` : 'Retur produk', changes);
+    await saveState();
+    returForm = {productId:'',qty:'',note:''};
+    showReturForm = false; formOpen=false;
+    showToast('Retur tercatat','success');
+    render();
+  });
+  const btnCancelRetur = document.getElementById('btnCancelRetur');
+  if(btnCancelRetur) btnCancelRetur.addEventListener('click', ()=>{ showReturForm=false; formOpen=false; render(); });
+
+  c.querySelectorAll('[data-filter]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ mutasiFilter = btn.dataset.filter; render(); });
+  });
+
+  c.querySelectorAll('[data-undo-movement]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const id = btn.dataset.undoMovement;
+      const idx = state.movements.findIndex(m=>m.id===id);
+      if(idx<0) return;
+      if(!confirm('Batalkan mutasi ini? Perubahan stok akan dikembalikan.')) return;
+      const m = state.movements[idx];
+      const reverseChanges = m.changes.map(c=>({productId:c.productId, name:c.name, delta:-c.delta}));
+      applyChangesToStock(reverseChanges);
+      state.movements.splice(idx,1);
+      await saveState();
+      showToast('Mutasi dibatalkan');
+      render();
+    });
+  });
+}
+
+/* =========================================================
+   HEADER REFRESH BUTTON
+========================================================= */
+document.getElementById('refreshBtn').addEventListener('click', async ()=>{
+  if(formOpen){ showToast('Selesaikan/batalkan form dulu sebelum sync ulang','error'); return; }
+  const lbl = document.getElementById('refreshLabel');
+  lbl.textContent = '...';
+  await loadState(true);
+  lbl.textContent = 'Sync';
+  showToast('Data tersinkron dari cloud','success');
+  render();
+});
+
+document.addEventListener('visibilitychange', async ()=>{
+  if(document.visibilityState==='visible' && !formOpen && document.getElementById('app').style.display!=='none'){
+    await loadState(true);
+    render();
+  }
+});
+
+/* =========================================================
+   INIT
+========================================================= */
+(async function init(){
+  if('serviceWorker' in navigator){
+    try{ await navigator.serviceWorker.register('sw.js'); }catch(e){ /* biarkan, PWA tetap jalan tanpa SW di sebagian browser */ }
+  }
+  await loadState(false);
+  render();
+})();
+</script>
+</body>
+</html>
